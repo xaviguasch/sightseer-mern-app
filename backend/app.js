@@ -1,3 +1,10 @@
-console.log('xavi')
+const express = require('express')
+const bodyParser = require('body-parser')
 
-console.log('amigo')
+const placesRoutes = require('./routes/places-routes')
+
+const app = express()
+
+app.use(placesRoutes)
+
+app.listen(5000)
