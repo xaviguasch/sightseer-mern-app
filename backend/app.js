@@ -28,7 +28,9 @@ app.use((error, req, res, next) => {
 })
 
 mongoose
-  .connect('<PENDING>')
+  .connect(
+    'mongodb+srv://xaviguasch:<PASSWORD>@cluster0-wje1t.mongodb.net/places?retryWrites=true&w=majority'
+  )
   .then(() => {
     app.listen(5000)
   })
