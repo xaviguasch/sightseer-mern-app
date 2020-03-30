@@ -72,7 +72,7 @@ const createPlace = async (req, res, next) => {
     address,
     location: coordinates,
     image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
+      'https://images.musement.com/cover/0003/90/esb-am-pm-cover_header-289357.jpeg?&q=60&fit=crop&lossless=true&auto=format&w=2400&h=800',
     creator
   })
 
