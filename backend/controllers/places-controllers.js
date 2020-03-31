@@ -19,12 +19,16 @@ let DUMMY_PLACES = [
   }
 ]
 
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid // { pid: 'p1' }
+  let place
 
-  const place = DUMMY_PLACES.find(p => {
-    return p.id === placeId
-  })
+  try {
+    place = await Place.findById(placeId)
+  } catch (err) {
+    const error = new HttpError('Something went wrong, could not find a place.', 500)
+    return next(error)
+  }
 
   if (!place) {
     throw new HttpError('Could not find a place for the provided id.', 404)
@@ -71,8 +75,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      'https://images.musement.com/cover/0003/90/esb-am-pm-cover_header-289357.jpeg?&q=60&fit=crop&lossless=true&auto=format&w=2400&h=800',
+    image: 'https://images.musement.com/cover/0003/90/esb-am-pm-cover_header-289357.jpeg',
     creator
   })
 
