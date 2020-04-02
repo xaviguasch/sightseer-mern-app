@@ -20,7 +20,7 @@ let DUMMY_PLACES = [
 ]
 
 const getPlaceById = async (req, res, next) => {
-  const placeId = req.params.pid // { pid: 'p1' }
+  const placeId = req.params.pid
   let place
 
   try {
@@ -35,11 +35,8 @@ const getPlaceById = async (req, res, next) => {
     return next(error)
   }
 
-  res.json({ place: place.toObject({ getters: true }) }) // => { place } => { place: place }
+  res.json({ place: place.toObject({ getters: true }) })
 }
-
-// function getPlaceById() { ... }
-// const getPlaceById = function() { ... }
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid
@@ -76,7 +73,6 @@ const createPlace = async (req, res, next) => {
     return next(error)
   }
 
-  // const title = req.body.title;
   const createdPlace = new Place({
     title,
     description,
