@@ -2,6 +2,7 @@ const uuid = require('uuid/v4')
 const { validationResult } = require('express-validator')
 
 const HttpError = require('../models/http-error')
+const User = require('../models/user')
 
 const DUMMY_USERS = [
   {
@@ -16,7 +17,7 @@ const getUsers = (req, res, next) => {
   res.json({ users: DUMMY_USERS })
 }
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -26,11 +27,25 @@ const signup = (req, res, next) => {
 
   const { name, email, password } = req.body
 
-  const hasUser = DUMMY_USERS.find(u => u.email === email)
+  let existingUser
 
-  if (hasUser) {
-    throw new HttpError('Could not create user, email already exists.', 421)
+  try {
+     existingUser = awiat User.findOne({ email: email })
+  } catch(err) {
+    const error = new HttpError(
+      'Signing up failed, plese try again later.', 500
+    )
+    return next(error)
   }
+
+  if (existingUser){
+    const error = new HttpError(
+      'User exists already, please login instead.', 422
+    )
+    return next(error)
+  }
+
+  
 
   const createdUser = {
     id: uuid(),
