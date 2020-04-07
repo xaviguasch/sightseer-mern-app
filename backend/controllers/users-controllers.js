@@ -22,41 +22,41 @@ const signup = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     console.log(errors)
-    throw new HttpError('Invalids inputs passed, please check your data.', 422)
+    return next(new HttpError('Invalids inputs passed, please check your data.', 422))
   }
 
-  const { name, email, password } = req.body
+  const { name, email, password, places } = req.body
 
   let existingUser
 
   try {
-     existingUser = awiat User.findOne({ email: email })
-  } catch(err) {
-    const error = new HttpError(
-      'Signing up failed, plese try again later.', 500
-    )
+    existingUser = await User.findOne({ email: email })
+  } catch (err) {
+    const error = new HttpError('Signing up failed, plese try again later.', 500)
     return next(error)
   }
 
-  if (existingUser){
-    const error = new HttpError(
-      'User exists already, please login instead.', 422
-    )
+  if (existingUser) {
+    const error = new HttpError('User exists already, please login instead.', 422)
     return next(error)
   }
 
-  
-
-  const createdUser = {
-    id: uuid(),
+  const createdUser = new User({
     name,
     email,
-    password
+    image: 'https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg',
+    password,
+    places
+  })
+
+  try {
+    await createdUser.save()
+  } catch (err) {
+    const error = new HttpError('Signing up failed, please try again.', 500)
+    return next(error)
   }
 
-  DUMMY_USERS.push(createdUser)
-
-  res.status(201).json({ user: createdUser })
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) })
 }
 
 const login = (req, res, next) => {
