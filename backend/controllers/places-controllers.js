@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator')
 const HttpError = require('../models/http-error')
 const getCoordsForAddress = require('../util/location')
 const Place = require('../models/place')
+const User = require('../models/user')
 
 let DUMMY_PLACES = [
   {
@@ -12,11 +13,11 @@ let DUMMY_PLACES = [
     description: 'One of the most famous sky scrapers in the world!',
     location: {
       lat: 40.7484474,
-      lng: -73.9871516
+      lng: -73.9871516,
     },
     address: '20 W 34th St, New York, NY 10001',
-    creator: 'u1'
-  }
+    creator: 'u1',
+  },
 ]
 
 const getPlaceById = async (req, res, next) => {
@@ -55,7 +56,7 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(new HttpError('Could not find places for the provided user id.', 404))
   }
 
-  res.json({ places: places.map(place => place.toObject({ getters: true })) })
+  res.json({ places: places.map((place) => place.toObject({ getters: true })) })
 }
 
 const createPlace = async (req, res, next) => {
@@ -79,8 +80,22 @@ const createPlace = async (req, res, next) => {
     address,
     location: coordinates,
     image: 'https://images.musement.com/cover/0003/90/esb-am-pm-cover_header-289357.jpeg',
-    creator
+    creator,
   })
+
+  let user
+
+  try {
+    user = await User.findById(creator)
+  } catch (err) {
+    const error = new HttpError('Creating place failed, please try again', 500)
+    return next(error)
+  }
+
+  if (!user) {
+    const error = new HttpError('Could not find user for provided id', 404)
+    return next(error)
+  }
 
   try {
     await createdPlace.save()
